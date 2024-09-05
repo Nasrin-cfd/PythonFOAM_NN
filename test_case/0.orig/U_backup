@@ -1,0 +1,84 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v1912                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+
+internalField   uniform (20 0 0);
+
+boundaryField
+{
+    inlet_up
+    {
+        type            fixedProfile;
+        profile         csvFile;
+        profileCoeffs
+        {
+            nHeaderLine     0;
+            refColumn       0;
+            componentColumns 3(1 2 3);
+            separator       ",";
+            mergeSeparators 0;
+            file            "0/uprofile_up100.csv";
+        }
+        direction       (0 1 0);
+        origin          0;
+        value           nonuniform; 
+    }
+    inlet_down
+    {
+        type            fixedProfile;
+        profile         csvFile;
+        profileCoeffs
+        {
+            nHeaderLine     0;
+            refColumn       0;
+            componentColumns 3(1 2 3);
+            separator       ",";
+            mergeSeparators 0;
+            file            "0/uprofile_down100.csv";
+        }
+        direction       (0 1 0);
+        origin          0;
+        value           nonuniform; 
+    }
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      uniform (0 0 0);
+        value           uniform (0 0 0);
+    }
+    upperSide
+    {
+        type            slip;
+    }
+    lowerSide
+    {
+        type            slip;
+    }
+    septumWall
+    {
+        type            noSlip;
+    }
+    frontAndBack2d
+    {
+        type            empty;
+    }
+}
+
+
+// ************************************************************************* //
