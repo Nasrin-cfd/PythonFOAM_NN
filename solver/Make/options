@@ -1,1 +1,33 @@
+EXE_INC = \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(LIB_SRC)/sampling/lnInclude \
+    -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+    -I$(LIB_SRC)/TurbulenceModels/compressible/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/reactionThermo/lnInclude \
+    -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/chemistryModel/lnInclude \
+    -I$(LIB_SRC)/ODE/lnInclude \
+    -I$(LIB_SRC)/combustionModels/lnInclude\
+    -fopenmp\
+    -I/usr/include/python3.6m \
+    -I/home/nasrin/.local/lib/python3.6/site-packages/numpy/core/include
 
+EXE_LIBS = \
+    -lfiniteVolume \
+    -lfvOptions \
+    -lmeshTools \
+    -lsampling \
+    -lturbulenceModels \
+    -lcompressibleTurbulenceModels \
+    -lreactionThermophysicalModels \
+    -lspecie \
+    -lcompressibleTransportModels \
+    -lfluidThermophysicalModels \
+    -lchemistryModel \
+    -lODE \
+    -lcombustionModels\
+    -fopenmp\
+    -lpython3.6m
