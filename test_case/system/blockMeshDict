@@ -1,0 +1,212 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.1                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// blocks          
+//             +-----+---------------+
+//            5|      4            11|
+//             |                     |
+//             |                     |
+//            3|      2            10|
+//             +-----+               +
+//                   |               | 
+//             +-----+               +
+//            0|      1             9|
+//             |                     |
+//             |                     |
+//            6|      7             8|
+//             +-----+---------------+
+//
+
+scale 0.001;   
+
+hw  0.5; // wall height (baffle)
+lw  1.0; // wall length (baffle)
+H   5.0; // height
+L   20.0; // length
+T   1.0; // thickness (z-dir)
+dx  0.09; // x-resolution (uniform)
+dy  0.09; // y-resolution (uniform)
+
+// calculations
+y_max #calc "$hw/2+$H/2";
+y_min #calc "$hw/2-$H/2";
+nx0   #calc "round($lw/$dx)";
+nx1   #calc "round(($L-$lw)/$dx)";
+ny0   #calc "round(($H-$hw)/2/$dy)";
+ny1   #calc "round($hw/$dy)";
+ny2   #calc "round(($H-$hw)/2/$dy)";
+xmax  #calc "($L*2)";
+nx2   #calc "($nx1/10)";
+ 
+vertices
+(
+    ( 0      0      0)   // 0
+    ( $lw    0      0)   // 1
+    ( $lw    $hw    0)   // 2
+    ( 0      $hw    0)   // 3
+    ( $lw    $y_max 0)   // 4
+    ( 0      $y_max 0)   // 5
+    ( 0      $y_min 0)   // 6
+    ( $lw    $y_min 0)   // 7
+    ( $L     $y_min 0)   // 8
+    ( $L     0      0)   // 9
+    ( $L     $hw    0)   //10
+    ( $L     $y_max 0)   //11
+
+    ( 0      0      $T)  //12
+    ( $lw    0      $T)  //13
+    ( $lw    $hw    $T)  //14
+    ( 0      $hw    $T)  //15
+    ( $lw    $y_max $T)  //16
+    ( 0      $y_max $T)  //17
+    ( 0      $y_min $T)  //18
+    ( $lw    $y_min $T)  //19
+    ( $L     $y_min $T)  //20
+    ( $L     0      $T)  //21
+    ( $L     $hw    $T)  //22
+    ( $L     $y_max $T)  //23
+
+    ( $xmax  $y_min 0)   //24
+    ( $xmax  0      0)   //25
+    ( $xmax  $hw    0)   //26
+    ( $xmax  $y_max 0)   //27
+
+    ( $xmax  $y_min $T)   //28
+    ( $xmax  0      $T)   //29
+    ( $xmax  $hw    $T)   //30
+    ( $xmax  $y_max $T)   //31
+);
+
+blocks
+(
+    hex ( 7  8  9  1   19 20 21 13)  ($nx1 $ny0  1) simpleGrading (1 1 1)
+    hex ( 1  9 10  2   13 21 22 14)  ($nx1 $ny1  1) simpleGrading (1 1 1)
+    hex ( 2 10 11  4   14 22 23 16)  ($nx1 $ny2  1) simpleGrading (1 1 1)
+
+    hex ( 6  7  1  0   18 19 13 12)  ($nx0 $ny0  1) simpleGrading (1 1 1)
+    hex ( 3  2  4  5   15 14 16 17)  ($nx0 $ny2  1) simpleGrading (1 1 1)
+
+    hex ( 8 24 25  9   20 28 29 21)  ($nx2 $ny0  1) simpleGrading (10 1 1)
+    hex ( 9 25 26 10   21 29 30 22)  ($nx2 $ny1  1) simpleGrading (10 1 1)
+    hex (10 26 27 11   22 30 31 23)  ($nx2 $ny2  1) simpleGrading (10 1 1)
+); 
+
+edges
+(
+);
+
+boundary
+(
+    inlet_up
+    {
+        type patch;
+        faces
+        (
+            (3 15 17 5)
+        );
+    }
+
+    inlet_down
+    {
+        type patch;
+        faces
+        (
+            (6 18 12 0)
+        );
+    }
+
+    outlet
+    {
+        type patch;
+        faces
+        (
+        //  (9  21 20 8)
+        //  (10 22 21 9)
+        //  (11 23 22 10)
+            (25 29 28 24)
+            (26 30 25 29)
+            (27 31 26 30)
+        );
+    }
+
+    upperSide
+    {
+        type patch;
+        faces
+        (
+            (5 17 16 4)
+            (4 16 23 11)
+            (11 23 31 27)
+        );
+    }
+
+    lowerSide
+    {
+        type patch;
+        faces
+        (
+            (7 19 18 6)
+            (8 20 19 7)
+            (24 28 20 8)
+        );
+    }
+
+    septumWall
+    {
+        type wall;
+        faces
+        (
+            (0 12 13 1)
+            (1 13 14 2)
+            (2 14 15 3)
+        );
+    }
+
+    frontAndBack2d
+    {
+        type empty;
+        faces
+        (
+            (0 1  7  6)
+            (1 9  8  7)
+            (2 10 9  1)
+            (4 11 10 2)
+            (5 4   2 3)
+
+            (12 18 19 13)
+            (13 19 20 21)
+            (14 13 21 22)
+            (16 14 22 23)
+            (17 15 14 16)
+
+            (9 25 24 8)
+            (10 26 25 9)
+            (11 27 26 10)
+
+            (21 20 28 29)
+            (22 21 29 30)
+            (23 22 30 31)
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+
+// ************************************************************************* //
+

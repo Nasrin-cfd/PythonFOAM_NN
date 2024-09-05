@@ -1,0 +1,203 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.x                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     unipgReactingFoamVH;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime; // writeNow; // noWriteNow;
+
+endTime         1e-10;
+
+deltaT          1e-10;//1e-9
+
+writeControl    runTime;
+
+writeInterval   1e-10;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  12;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   9;
+
+runTimeModifiable true;
+
+adjustTimeStep  no;
+
+maxCo           0.1;  // 0.5; // 0.25;
+
+maxAcousticCo   1.0; // 10.0; // 5.0;
+
+
+functions
+{
+    minMax
+    {
+      type          fieldMinMax;
+      libs          (fieldFunctionObjects);
+      mode          magnitude;
+      writeControl  timeStep; //writeTime;
+      fields        (U T p rho Cp mu);
+    }
+
+    moleFractions
+    {
+        type psiReactionThermoMoleFractions;
+
+    } 
+    
+/*    linesample
+	{
+		type                           sets;
+		functionObjectLibs            ("libsampling.so");
+                writeControl    writeTime;
+
+               // writeControl    timeStep;
+               // outputInterval  100000;
+
+                interpolationScheme cellPoint;
+
+                setFormat raw;
+               
+                
+                sets
+                (
+            
+                  axialdata
+                  {
+                    type     lineUniform;
+                    axis     x;
+                    start   (0 0 0);
+                    end     (0.0030 0 0);
+                    nPoints 1920;
+                   }
+                   
+                  rad_40
+                  {
+                    type     lineUniform;
+                    axis     y;
+                    start   (0.0036 -0.00125 0);
+                    end     (0.0036  0.00125 0);
+                    nPoints 1600;
+                  }
+
+                  rad_30
+                  {
+                    type     lineUniform;
+                    axis     y;
+                    start   (0.0027 -0.00125 0);
+                    end     (0.0027  0.00125 0);
+                    nPoints 1600;
+                   }
+
+                  rad_20
+                  {
+                    type     lineUniform;
+                    axis     y;
+                    start   (0.0018 -0.00125 0);
+                    end     (0.0018  0.00125 0);
+                    nPoints 1600;
+                  } 
+                  
+             ); 
+
+            fields  (N2 p Cp mu kappa rho rhoMean T TMean U UMean);
+           // fields  (N2 T U p rho Cp mu kappa);
+            //fields  (rho);
+      } */
+         
+
+    //Averaging components 30mus and above
+    fieldAverage1
+    {
+        type            fieldAverage;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl    writeTime;
+        enabled         true;
+        timeStart       0.000200;
+        timeEnd         1;
+        resetOnOutput       no;
+        restartOnRestart    no;
+        fields
+        (
+            rho
+            {
+                mean        yes;
+                prime2Mean  yes;
+                base        time;
+            }
+
+            U
+            {
+                mean        yes;
+                prime2Mean  yes;
+                base        time;
+            }
+
+            T
+            {
+                mean        yes;
+                prime2Mean  yes;
+                base        time;
+            }
+
+            p
+            {
+                mean        yes;
+                prime2Mean  yes;
+                base        time;
+            }
+
+            O2
+            {
+                mean        yes;
+                prime2Mean  yes;
+                base        time;
+            }
+
+            H2
+            {
+                mean        yes;
+                prime2Mean  yes;
+                base        time;
+            }
+
+
+        );
+    }  
+} 
+
+
+
+
+libs
+(
+  "libspecie.so"
+  "libreactionThermophysicalModels.so"
+);
+
+
+//************************************************************** //
